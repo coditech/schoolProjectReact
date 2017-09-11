@@ -1,0 +1,96 @@
+import React from 'react';
+import HeaderNavItem from "./HeaderNavItem";
+
+
+const toogleClass = (className) => {
+
+    const el = document.getElementById('navigation');
+    if (el.classList) {
+        el.classList.toggle(className);
+    } else {
+        const classes = el.className.split(' ');
+        const existingIndex = classes.indexOf(className);
+
+        if (existingIndex >= 0)
+            classes.splice(existingIndex, 1);
+        else
+            classes.push(className);
+
+        el.className = classes.join(' ');
+    }
+}
+const HeaderAdmin = ({children, location, signOut}) => {
+
+    return (
+        <div className="container-fluid display-table">
+            <div className="row display-table-row">
+                <div className="col-md-2 col-sm-1 hidden-xs display-table-cell v-align box" id="navigation">
+                    <div className="logo">
+                        <a href="home.html">
+                            <img src="http://jskrishna.com/work/merkury/images/logo.png" alt="merkery_logo"
+                                 className="hidden-xs hidden-sm"/>
+                            <img src="http://jskrishna.com/work/merkury/images/circle-logo.png" alt="merkery_logo"
+                                 className="visible-xs visible-sm circle-logo"/>
+                        </a>
+                    </div>
+                    <div className="navi">
+                        <ul>
+                            <HeaderNavItem {...{
+                                location,
+                                navItem: {title: 'Home', pathname: '/admin', icon: 'fa-home'}
+                            }}/>
+                            <HeaderNavItem {...{
+                                location,
+                                navItem: {title: 'Homes', pathname: '/admin/23', icon: 'fa-home'}
+                            }}/>
+
+                            <li>
+                                <a href="#" onClick={(e) => {
+                                    e.preventDefault();
+                                    signOut()
+                                }}>
+                                    <i className="fa fa-cog" aria-hidden="true"/>
+                                    <span className="hidden-xs hidden-sm">Sign Out</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div className="col-md-10 col-sm-11 display-table-cell v-align">
+                    <div className="row">
+                        <header>
+                            <div className="col-md-7">
+                                <nav className="navbar-default pull-left">
+                                    <div className="navbar-header">
+                                        <button type="button" className="navbar-toggle collapsed" onClick={(event) => {
+                                            toogleClass('hidden-xs')
+                                        }}
+                                                data-toggle="offcanvas"
+                                                data-target="#side-menu" aria-expanded="false">
+                                            <span className="sr-only">Toggle navigation</span>
+                                            <span className="icon-bar"/>
+                                            <span className="icon-bar"/>
+                                            <span className="icon-bar"/>
+                                        </button>
+                                    </div>
+                                </nav>
+
+                            </div>
+                            <div className="col-md-5">
+                                <div className="header-rightside">
+
+                                </div>
+                            </div>
+                        </header>
+                    </div>
+                    <div className="user-dashboard">
+                        {children}
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
+}
+
+export default HeaderAdmin;
