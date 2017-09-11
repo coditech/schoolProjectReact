@@ -26,11 +26,11 @@ const PublicPages = ({loadArticles, articlesList, articleList, onClick, loadArti
             <Header/>
 
             <Switch>
-                <Route exact path='/article' render={(props) => <HomePage {...mix(props)}/>}/>
                 <Route path='/article/:id' render={(props) => {
                     return ( <ArticlePage {...mix(props)}/>)
                 }
                 }/>
+                <Route exact path='/article' render={(props) => <HomePage {...mix(props)}/>}/>
                 <Route exact path='/' render={(props) => <HomePage {...mix(props)}/>}/>
                 <Route path='/' render={(props) => <PageNotFound {...mix(props)}/>}/>
             </Switch>

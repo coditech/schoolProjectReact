@@ -39,7 +39,6 @@ const Dashboard = () => {
 
 
 function fetchJson(url) {
-    return fetch('http://localhost:8000/api/' + url).then(res => res.json())
 }
 const STATUS = {
     NONE: 0,
