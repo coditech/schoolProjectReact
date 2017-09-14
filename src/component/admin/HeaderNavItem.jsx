@@ -3,7 +3,7 @@ const activeClass = () => {
 
     return '';
 }
-const HeaderNavItem = ({navItem, location}) => {
+const HeaderNavItem = ({navItem}) => {
     return (
         <li className={''}>
             <a href={'#' + navItem.pathname}>

@@ -1,7 +1,8 @@
 import React from 'react';
 import {Link} from 'react-router-dom';
 import '../../styles/Article.styl';
-const Article = ({article, onClick}) => {
+const Article = ({article, onClick,loadArticle}) => {
+
 
 
     if (!article) {
@@ -26,7 +27,7 @@ const Article = ({article, onClick}) => {
                     className=""
                     role="button"
                     to={'/article/' + article.id}>
-                    <button className=" btn btn-default btn-block text-uppercase text-success" type=" button">Read
+                    <button onClick={()=> loadArticle(article.id)} className=" btn btn-default btn-block text-uppercase text-success" type=" button">Read
                         more
                     </button>
                 </Link>

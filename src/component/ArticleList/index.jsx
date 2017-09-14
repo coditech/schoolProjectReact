@@ -2,7 +2,7 @@ import React from "react";
 import Article from './Article';
 
 
-const Articles = ({articlesList,loadArticles,onClick }) => {
+const Articles = ({articlesList,loadArticles,loadArticle,onClick }) => {
 
     if (articlesList.currentPage > 0) {
         return (
@@ -14,7 +14,7 @@ const Articles = ({articlesList,loadArticles,onClick }) => {
 
                             return (
                                 <div key={article.id} className="col-sm-6">
-                                    <Article key={article.id} {...{article, onClick}}/>
+                                    <Article key={article.id} {...{article, onClick,loadArticle}}/>
                                 </div>
                             )
 

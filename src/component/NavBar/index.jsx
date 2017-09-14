@@ -26,7 +26,7 @@ const NavBar = ({auth,signOut}) => {
                 <NavItem >Sign out</NavItem>
             </LinkContainer>
         ) : (
-            <LinkContainer to={'login'}>
+            <LinkContainer to={'/login'}>
                 <NavItem>Login</NavItem>
             </LinkContainer>
         )
@@ -36,7 +36,7 @@ const NavBar = ({auth,signOut}) => {
         <Navbar className="navbar-school" collapseOnSelect>
             <Navbar.Header>
                 <Navbar.Brand className="navbar-link">
-                    <a href="#/2">SCC School</a>
+                    <a href={'/'}>SCC School</a>
                 </Navbar.Brand>
                 <Navbar.Toggle />
             </Navbar.Header>
@@ -46,7 +46,7 @@ const NavBar = ({auth,signOut}) => {
                     <LinkContainer to={'/'}>
                         <NavItem role="">Home</NavItem>
                     </LinkContainer>
-                    <LinkContainer to={'article'}>
+                    <LinkContainer to={'/article'}>
                         <NavItem >Article</NavItem>
                     </LinkContainer>
                     {/*<li key={0} role="presentation" className={'active'}>*/}

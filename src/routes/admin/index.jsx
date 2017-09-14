@@ -4,6 +4,10 @@ import formurlencoded from 'form-urlencoded';
 import HeaderAdmin from "../../component/admin/HeaderAdmin";
 import '../../styles/AdminHeader.styl';
 import Test from "../../component/Test";
+import UsersPage from "./UsersPage";
+import UserEditPage from "./UserEditPage";
+import UsersAddPage from "./UsersAddPage";
+import PageNotFound from "../public/404";
 
 function loadScript(urls) {
     return new Promise(function (resolve, reject) {
@@ -28,23 +32,20 @@ function loadStyle(urls) {
         document.head.appendChild(link);
     }));
 }
+const mixProps = (passed_props_home) => (props) => ({...passed_props_home, ...props})
+
 const AdminArticlePage = ({match}) => ( <h2>Helloo ha {match.params.id}</h2>);
 
 
 const Dashboard = () => {
-
-
-    return <h3>Dashboard</h3>
-}
-
-
-function fetchJson(url) {
-}
+    return <h3>Dashboards</h3>
+};
 const STATUS = {
     NONE: 0,
     LOADING: 1,
     READY: 2,
-    ERROR: 3
+    ERROR: 3,
+    CHANGED: 4,
 };
 
 function fetchPostJson(url, data) {
@@ -62,11 +63,28 @@ function fetchPostJson(url, data) {
     };
     return fetch('http://localhost:8000/api/' + url, settings).then(res => res.json())
 }
+
+const navBarItems = [
+    {
+        title: 'Home',
+        pathname: '/',
+        icon: 'fa-home',
+    }
+    , {
+        title: 'Users',
+        pathname: '/admin/users',
+        icon: 'fa-users'
+    }, {
+        title: 'Dashboard',
+        pathname: '/admin',
+        icon: 'fa-dashboard'
+    }
+
+]
 class AdminPages extends React.Component {
 
     constructor(props, context) {
         super(props, context);
-
 
         const {
             location
@@ -81,25 +99,27 @@ class AdminPages extends React.Component {
             , match
             , signOut
             , auth
+            , current_page: '/admin'
             , users: {
                 users: [],
                 errors: null,
                 status: STATUS.NONE
             }
-            , usersSearch: {
+            , usersSearchData: {
                 users: [],
                 errors: null,
                 status: STATUS.NONE
             }
-            , editUser: {
+            , editUserData: {
                 id: null,
                 errors: null,
+                user: null,
                 status: STATUS.NONE
-            }, addUser: {
-
+            }, addUserData: {
+                user: {},
                 errors: null,
                 status: STATUS.NONE
-            }, deleteUser: {
+            }, deleteUserData: {
                 id: null,
                 errors: null,
                 status: STATUS.NONE
@@ -111,11 +131,13 @@ class AdminPages extends React.Component {
             'isUserTeacher',
             'isUserStudent',
             'getUsers',
-            'getuserById',
             'getUsersSearch',
             'deleteUser',
             'editUser',
-            'addUser'
+            'addUser',
+            'getEdituserById',
+            'handleEditInputChange',
+            'handleUserAddInputChange'
         ])
 
     }
@@ -150,27 +172,64 @@ class AdminPages extends React.Component {
         return this.state.auth.username;
     }
 
+    clearData() {
+        const oldState = this.state;
+        const initialData = {
+            users: {
+                users: [],
+                errors: null,
+                status: STATUS.NONE
+            }
+            , usersSearchData: {
+                users: [],
+                errors: null,
+                status: STATUS.NONE
+            }
+            , editUserData: {
+                id: null,
+                errors: null,
+                user: null,
+                status: STATUS.NONE
+            }, addUserData: {
+                user: {},
+                errors: null,
+                status: STATUS.NONE
+            }, deleteUserData: {
+                id: null,
+                errors: null,
+                status: STATUS.NONE
+            },
+            auth: {}
+        }
+
+        const newState = {...oldState, ...initialData}
+        this.setState(newState);
+    }
+
     getUsers() {
         this.setState({...this.state, users: {...this.state.users, status: STATUS.LOADING}});
         const bodyData = {
             api_username: this.getUsername(),
             api_password: this.getPassword()
         };
+
         fetchPostJson('person/info/search', bodyData).then(res => {
-            console.log('Ressouces', res);
+            console.log('ress', res)
             if (!res.success) {
-                console.log('Ressouces', res);
-
                 throw new Error(res.error);
-                const oldState = this.state;
-                const newState = {...oldState, users: {...oldState.users, error: res.error, status: STATUS.ERROR}};
-                this.setState(newState);
-                return;
+                if (res.error === 'Incorrect Username Or Password') {
+                    this.clearData();
 
+                } else {
+                    const oldState = this.state;
+                    const newState = {...oldState, users: {...oldState.users, error: res.error, status: STATUS.ERROR}};
+                    this.setState(newState);
+                    return;
+                }
             }
             const users = [];
             res.data.map(function (user) {
-                users[user.id] = {
+                users.push({
                     username: user.username,
                     id: user.id,
                     name: user.name,
@@ -179,9 +238,9 @@ class AdminPages extends React.Component {
                     email: user.email,
                     telephone: user.telephone,
                     userType: user.userType,
-                    date: user.date
-                }
-
+                    date: user.date,
+                    password: user.password
+                })
             });
             const usersObject = {
                 users: users,
@@ -191,31 +250,42 @@ class AdminPages extends React.Component {
             const oldState = this.state;
             const newState = {...oldState, users: usersObject};
             this.setState(newState);
-
-
         })
-
     }
 
-    getuserById({id}) {
-
+    getEdituserById({id}) {
         const bodyData = {
             api_username: this.getUsername(),
             api_password: this.getPassword(),
-            id
+            id: id
         }
-        this.setState({...this.state, users: {...this.state.users, status: STATUS.LOADING}});
 
+        const oldState = this.state;
+        this.setState({
+            ...oldState,
+            editUserData: {...oldState.editUserData, status: STATUS.LOADING}
+        });
+
+        if (this.state.users.users[id]) {
+
+            const user = this.state.users.users[id];
+            const newState = {...oldState, editUserData: {...oldState.editUserData, user: user, status: STATUS.READY}}
+            this.setState(newState);
+        }
         fetchPostJson('person/info/id', bodyData).then(res => {
-
             if (!res.success) {
                 throw new Error(res.error);
+                if (res.error === 'Incorrect Username Or Password') {
+                    this.clearData();
 
-                const oldState = this.state;
-                const newState = {...oldState, users: {...oldState.users, error: res.error, status: STATUS.ERROR}};
-                this.setState(newState);
-                return;
-
+                } else {
+                    const newState = {
+                        ...oldState
+                        , editUserData: {...oldState.editUserData, status: STATUS.ERROR, user: {}}
+                    };
+                    this.setState(newState);
+                    return;
+                }
             }
             const user = {
                 username: res.data.username,
@@ -226,80 +296,109 @@ class AdminPages extends React.Component {
                 email: res.data.email,
                 telephone: res.data.telephone,
                 userType: res.data.userType,
-                date: res.data.date
+                date: res.data.date,
+                password: res.data.password
             }
             const oldState = this.state;
-            const newState = {...oldState, users: {...oldState.users, user: {...oldState.users.users, [id]: user}}};
+            const newState = {
+                ...oldState,
+                editUserData: {...oldState.editUserData, status: STATUS.READY, id: user.id, user}
+            };
             this.setState(newState);
-
-
-            return rsponse;
         })
     }
 
-    deleteUser({id}) {
+    handleEditInputChange(input) {
+        const oldState = this.state;
+        const user = oldState.editUserData.user;
+        user[input.key] = input.value;
+        const newState = {...oldState, editUserData: {...oldState.editUserData, user}}
+        this.setState(newState);
+
+    }
+
+    handleUserAddInputChange(input) {
+        const oldState = this.state;
+        const user = oldState.addUserData.user;
+        user[input.key] = input.value;
+        const newState = {...oldState, addUserData: {...oldState.addUserData, user}}
+        this.setState(newState);
+
+    }
+
+    deleteUser(id) {
         const bodyData = {
             api_username: this.getUsername(),
             api_password: this.getPassword(),
-            id
+            id: id
         }
         this.setState({...this.state, deleteUser: {...this.state.deleteUser, status: STATUS.LOADING, id: id}});
-
         fetchPostJson('person/delete', bodyData).then(res => {
-            console.log('Ressources ==>>', res);
             if (!res.success) {
                 throw new Error(res.error);
-                const oldState = this.state;
-                const newState = {
-                    ...oldState,
-                    deleteUser: {...oldState.deleteUser, status: STATUS.ERROR, error: res.error}
-                };
-                this.setState(newState);
-                return;
+                if (res.error === 'Incorrect Username Or Password') {
+                    this.clearData();
 
+                } else {
+                    const oldState = this.state;
+                    const newState = {
+                        ...oldState,
+                        deleteUser: {...oldState.deleteUser, status: STATUS.ERROR, error: res.error}
+                    };
+                    this.setState(newState);
+                    return;
+                }
             }
-
-
             const oldState = this.state;
-            const usersList = oldState.users.users.splice(id, 1);
+            const usersList = oldState.users.users;
+            const user = usersList.filter((user) => {
+                return user.id === id
+            })[0];
+            let keys = Object.keys(user);
+            // remove element from the array by index
+            usersList.splice(
+                // get the index of the element
+                usersList.findIndex(function (obj) {
+                    // check all property values are equal
+                    return keys.every(function (k) {
+                        return obj.id === user.id;
+                    });
+                    // if you want to check only the `id` property then     // you can avoid the above codes and use
+                    // return obj.id === task.id;
+                }), 1);
             const newState = {
                 ...oldState,
                 users: {...oldState.users, users: usersList},
                 deleteUser: {...oldState.deleteUser, status: STATUS.READY, error: null}
             };
             this.setState(newState);
-
         });
-
-
+        this.getUsers();
     }
 
-    editUser({id, name, lastName, gender, email, telephone, userType, username, password}) {
+    editUser() {
         const bodyData = {
             api_username: this.getUsername(),
             api_password: this.getPassword(),
-            id,
-            name,
-            lastName,
-            gender,
-            email,
-            telephone,
-            userType,
-            username,
-            password
+            ...this.state.editUserData.user
         };
-        this.setState({...this.state, editUser: {...this.state.editUser, status: STATUS.LOADING, id: id}});
-
+        this.setState({...this.state, editUserData: {...this.state.editUserData, status: STATUS.LOADING}});
         fetchPostJson('person/edit', bodyData).then(res => {
+            const oldState = this.state;
+
             if (!res.success) {
                 throw new Error(res.error);
-                const oldState = this.state;
-                const newState = {
-                    ...oldState,
-                    editUser: {...oldState.editUser, status: STATUS.ERROR, error: res.error}
-                };
-                this.setState(newState);
-                return;
+                if (res.error === 'Incorrect Username Or Password') {
+                    this.clearData();
+
+                } else {
+                    const newState = {
+                        ...oldState,
+                        editUserData: {...oldState.editUserData, status: STATUS.ERROR, error: res.error}
+                    };
+                    this.setState(newState);
+                    return;
+                }
 
             }
 
@@ -312,55 +411,65 @@ class AdminPages extends React.Component {
                 email: res.data.email,
                 telephone: res.data.telephone,
                 userType: res.data.userType,
-                date: res.data.date
+                date: res.data.date,
+                password: res.data.password
             }
-            const oldState = this.state;
             const newState = {
-                ...oldState,
-                users: {...oldState.users, status: STATUS.READY, users: {...oldState.users.users, [id]: user}}
-                , editUser: {...oldState.editUser, status: STATUS.READY, error: null}
+                ...oldState
+                , editUserData: {...oldState.editUserData, status: STATUS.READY, error: null}
             };
             this.setState(newState);
-
         })
+
+
     }
 
-    addUser({name, lastName, gender, email, telephone, userType, username, password}) {
+    addUser() {
+        const user = this.state.addUserData.user;
+        console.log('add user', user);
         const bodyData = {
             api_username: this.getUsername(),
             api_password: this.getPassword(),
-            name,
-            lastName,
-            gender,
-            email,
-            telephone,
-            userType,
-            username,
-            password
+            ...user
         };
-        this.setState({...this.state, addUser: {...this.state.addUser, status: STATUS.LOADING}});
+        this.setState({...this.state, addUserData: {...this.state.addUserData, status: STATUS.LOADING}});
 
-        fetchPostJson('person/edit', bodyData).then(res => {
+        fetchPostJson('person/add', bodyData).then(res => {
             if (!res.success) {
                 throw new Error(res.error);
-                const oldState = this.state;
-                const newState = {
-                    ...oldState,
-                    addUser: {...oldState.addUser, status: STATUS.ERROR, error: res.error}
-                };
-                this.setState(newState);
-                return;
+                if (res.error === 'Incorrect Username Or Password') {
+                    this.clearData();
 
+                } else {
+                    const oldState = this.state;
+                    const newState = {
+                        ...oldState,
+                        addUserData: {...oldState.addUserData, status: STATUS.ERROR, error: res.error}
+                    };
+                    this.setState(newState);
+                    return;
+
+                }
             }
 
 
             const oldState = this.state;
+            const id = oldState.addUserData.user.id;
             const newState = {
                 ...oldState,
-                users: {...oldState.users, status: STATUS.READY, users: {...oldState.users.users, [id]: user}, }
-                , addUser: {...oldState.addUser, status: STATUS.READY}
+                users: {...oldState.users, status: STATUS.READY, users: {...oldState.users.users, [id]: user},}
+                , addUserData: {...oldState.addUserData, status: STATUS.READY}
             };
             this.setState(newState);
+        }).catch(e => {
+            throw new Error(e);
+            const oldState = this.state;
+            const newState = {
+                ...oldState,
+                addUserData: {...oldState.addUserData, status: STATUS.ERROR, error: e.message}
+            };
+            this.setState(newState);
+            return;
         });
     }
 
@@ -386,14 +495,19 @@ class AdminPages extends React.Component {
         fetchPostJson('person/info/search', bodyData).then(res => {
             if (!res.success) {
                 throw new Error(res.error);
-                const oldState = this.state;
-                const newState = {
-                    ...oldState,
-                    usersSearch: {...oldState.usersSearch, status: STATUS.ERROR, error: res.error}
-                };
-                this.setState(newState);
+                if (res.error === 'Incorrect Username Or Password') {
+                    this.clearData();
 
-                return;
+                } else {
+                    const oldState = this.state;
+                    const newState = {
+                        ...oldState,
+                        usersSearch: {...oldState.usersSearch, status: STATUS.ERROR, error: res.error}
+                    };
+                    this.setState(newState);
+
+                    return;
+                }
 
             }
             const usersSearch = [];
@@ -412,7 +526,10 @@ class AdminPages extends React.Component {
 
             });
             const oldState = this.state;
-            const newState = {...oldState, usersSearch: {...oldState.usersSearch, status: STATUS.READY, users: usersSearch}};
+            const newState = {
+                ...oldState,
+                usersSearch: {...oldState.usersSearch, status: STATUS.READY, users: usersSearch}
+            };
             this.setState(newState);
 
         });
@@ -420,16 +537,66 @@ class AdminPages extends React.Component {
     }
 
 
+    componentDidMount() {
+        const match = this.state.match;
+        const {page, page2, page3} = this.state.match.params;
+        if (page) {
+            if (page === 'users') {
+
+                if (page2) {
+                    if (page2 === 'edit') {
+                        if (page3) {
+                            const id = page3;
+                            this.getEdituserById({id});
+
+                        }
+
+
+                    }
+                } else {
+                    this.getUsers();
+                }
+            }
+        }
+
+    }
+
+    componentWillReceiveProps(nextProps) {
+        const {page, page2, page3} = nextProps.match.params;
+        if (page) {
+            if (page === 'users') {
+                if (page2) {
+                    if (page2 === 'edit') {
+                        if (page3) {
+                            const id = page3;
+                            this.getEdituserById({id});
+                        }
+                    }
+                } else {
+                    console.log('22')
+                    this.getUsers();
+                }
+            }
+        } else {
+        }
+        this.setState(nextProps);
+    }
+
     render() {
         /*    const passed_props = {
          location: this.state.location,
          match: this.state.match,
          signOut: this.state.signOut
          }*/
+        const {users, editUserData, addUserData} = this.state;
         const {
             getUsers,
             getuserById,
-            deleteUser
+            deleteUser,
+            editUser,
+            handleEditInputChange,
+            handleUserAddInputChange,
+            addUser
         } = this;
         const passed_props = {
             location: this.state.signOut,
@@ -438,23 +605,37 @@ class AdminPages extends React.Component {
             auth: this.state.auth,
             getUsers,
             getuserById,
-            deleteUser
+            deleteUser,
+            users,
+            navBarItems,
+            editUser,
+            editUserData,
+            handleEditInputChange,
+            addUserData,
+            handleUserAddInputChange,
+            addUser
         };
-
+        const mix = mixProps(passed_props);
         return (
             <main>
                 <Test {...passed_props} />
-
                 <HeaderAdmin {...passed_props}>
                     <Switch>
-                        <Route path='/admin/:id' render={(props) => <AdminArticlePage {...props}/>}/>
-                        <Route path='/admin' render={(props) => <Dashboard {...props}/>}/>
+                        <Route path='/admin/users/edit/:id' render={(props) => {
+                            return <UserEditPage {...mix(props)}/>
+                        }}/>
+                        <Route exact path='/admin/users/add' render={(props) => {
+                            return <UsersAddPage {...mix(props)}/>
+                        }}/>
+                        <Route exact path='/admin/users' render={(props) => {
+                            return <UsersPage {...mix(props)}/>
+                        }}/>
 
-
+                        <Route exact path='/admin' render={(props) => <Dashboard {...mix(props)}/>}/>
+                        <Route path='/admin/:i?' render={(props) => <PageNotFound {...mix(props)}/>}/>
                     </Switch>
                 </HeaderAdmin>
             </main>
-
         )
     }
 }

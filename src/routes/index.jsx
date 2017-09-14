@@ -16,7 +16,7 @@ import Test from "../component/Test";
 
 const mixProps = (passed_props_home) => (props) => ({...passed_props_home, ...props})
 
-const Router = ({loadArticles, loadArticle, articlesList, articleList, onClick, AuthButton, checkAuthenticate,login, authenticate, PrivateRoute,auth,signOut, match}) => {
+const Router = ({...props, loadArticles, loadArticle, articlesList, articleList, onClick, checkAuthenticate, login, authenticate, PrivateRoute, auth, signOut}) => {
 
     const passed_props_home = {
         loadArticles
@@ -30,16 +30,15 @@ const Router = ({loadArticles, loadArticle, articlesList, articleList, onClick, 
         , auth
         , signOut
     };
-
     const mix = mixProps(passed_props_home);
     return (
         <main>
             <Switch>
 
-                <PrivateRoute path="/admin" component={AdminPages} passedProps={passed_props_home}/>
+                <PrivateRoute path="/admin/:page?/:page2?/:page3?/:page4?" component={AdminPages} passedProps={passed_props_home}/>
 
                 <Route path='/login' render={(props) => <Login {...mix(props)}/>}/>
-                <Route path='/' render={(props) => {
+                <Route path='/:page?/:page2?/:page3?/:page4?' render={(props) => {
                     return ( <PublicPages {...mix(props)}/>)
                 }
                 }/>

@@ -4,17 +4,17 @@ import ArticlePost from "../../component/ArticlePost";
 
 const ArticlePage = ({match, loadArticle, articleList}) => {
 
-    if (!articleList.status) {
-
-        if (!match.params.id) {
-
-        } else {
-            loadArticle(match.params.id);
-        }
-    }
+    // if (!articleList.status) {
+    //
+    //     if (!match.params.id) {
+    //
+    //     } else {
+    //         loadArticle(match.params.id);
+    //     }
+    // }
 
     // article, nextArticle, previousArticle
-
+    console.log('Match -==>', articleList);
 
     if (articleList.article[match.params.id]) {
         const passedProps = {
@@ -29,7 +29,11 @@ const ArticlePage = ({match, loadArticle, articleList}) => {
         )
     } else {
 
-        return (<h2>Hello </h2>)
+        return (
+            <div className="container">
+                <h2>Article not found.</h2>
+            </div>
+        )
     }
 
 

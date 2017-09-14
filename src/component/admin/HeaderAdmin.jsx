@@ -19,7 +19,12 @@ const toogleClass = (className) => {
         el.className = classes.join(' ');
     }
 }
-const HeaderAdmin = ({children, location, signOut}) => {
+
+const AdminNavItem = ({navBarItem}) => (
+
+    <h2>jj</h2>
+)
+const HeaderAdmin = ({children, location, signOut,navBarItems}) => {
 
     return (
         <div className="container-fluid display-table">
@@ -35,14 +40,13 @@ const HeaderAdmin = ({children, location, signOut}) => {
                     </div>
                     <div className="navi">
                         <ul>
-                            <HeaderNavItem {...{
-                                location,
-                                navItem: {title: 'Home', pathname: '/admin', icon: 'fa-home'}
-                            }}/>
-                            <HeaderNavItem {...{
-                                location,
-                                navItem: {title: 'Homes', pathname: '/admin/23', icon: 'fa-home'}
-                            }}/>
+
+                            {
+                                typeof navBarItems !== 'undefined' ? navBarItems.map((navItem,index) => (
+                                    <HeaderNavItem key={index} {...{navItem}}/>
+                                )) : null
+                            }
+
 
                             <li>
                                 <a href="#" onClick={(e) => {

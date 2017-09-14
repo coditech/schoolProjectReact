@@ -1,5 +1,6 @@
 import React, {Component} from "react";
 import ReactDOM from 'react-dom';
+import queryString from 'query-string';
 import Router from '../routes/index'
 import Test from './Test';
 import '../styles/App.styl';
@@ -32,11 +33,7 @@ class App extends Component {
 
         const state = {
             articlesList: {
-                pages: [
-                    {
-                        pagination: []
-                    }
-                ],
+                pages: [],
                 currentPage: -1,
                 status: STATUS.NONE
             },
@@ -76,6 +73,7 @@ class App extends Component {
         ]);
         this.state = state;
 
+
     }
 
     bindMe(methodNames) {
@@ -91,22 +89,25 @@ class App extends Component {
     }
 
     loadArticles(page = 1) {
+
         this.setState({...this.state, articlesList: {...this.state.articlesList, status: STATUS.LOADING}});
         if (this.state.articlesList.pages[page]) {
             if (page != this.state.articlesList.currentPage) {
                 const oldState = this.state;
                 const articlesList = oldState.articlesList;
-                const newState = {...oldState, articlesList: {...articlesList, currentPage: page}}
+                const newState = {...oldState, articlesList: {...articlesList, currentPage: page, status: STATUS.READY}};
                 this.setState(newState);
 
             }
 
         } else {
-            fetchJson('home?limit=10&&page=' + page)
+            fetchJson('home?limit=6&&page=' + page)
                 .then(
                     res => {
                         if (!res.success) {
                             throw new Error(res.error);
+
+                            return;
                         }
 
 
@@ -217,7 +218,6 @@ class App extends Component {
         }
     }
 
-
     /**
      * Admin Section
      * */
@@ -277,7 +277,6 @@ class App extends Component {
 
         this.setState({...this.state, auth: {...this.state.auth, status: STATUS.LOADING}});
         fetchJson('person/logout').then(res => {
-            console.log("response Signout =+=>", res)
         });
         const auth = {
             username: null,
@@ -329,10 +328,12 @@ class App extends Component {
     ))
 
 
-    componentWillMount() {
+    // componentWillMount() {
+    //     console.log('componentWillMount===>>>', this);
+    //     // this.loadArticles(1);
+    // }
 
-        // this.loadArticles(1);
-    }
+
 
     render() {
         const {

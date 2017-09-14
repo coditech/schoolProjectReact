@@ -21,6 +21,8 @@ const Test = ({loadArticles, getUsers,login,getuserById,deleteUser}) => {
             }}>Login
             </button>
             <Link to={'/'} >Home</Link>
+            <Link to={'/admin/users/2'} >admin/users/2</Link>
+            <Link to={'/admin/2'} >admin/2</Link>
         </div>
     )
 
