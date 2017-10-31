@@ -1,5 +1,6 @@
 import React from 'react';
-import {Route, Switch} from "react-router-dom";
+import {Route, Switch, Link, Redirect, withRouter} from "react-router-dom";
+
 import formurlencoded from 'form-urlencoded';
 import HeaderAdmin from "../../component/admin/HeaderAdmin";
 import '../../styles/AdminHeader.styl';
@@ -81,6 +82,26 @@ const navBarItems = [
     }
 
 ]
+const PrivateAdminRoutes = ({component: Component, passedProps, ...rest}) => {
+
+    return (
+        <Route {...rest} render={props => {
+            const {auth} = passedProps;
+            props = {...props, ...passedProps};
+            return (
+                auth.isAuthenticated && auth.userType === 'admin' ? (
+                    <Component {...props}/>
+                ) : (
+                    <Redirect to={{
+                        pathname: '/admin',
+                        state: {from: props.location}
+                    }}/>
+                )
+            )
+        }}/>
+    )
+};
+
 class AdminPages extends React.Component {
 
     constructor(props, context) {
@@ -536,7 +557,6 @@ class AdminPages extends React.Component {
 
     }
 
-
     componentDidMount() {
         const match = this.state.match;
         const {page, page2, page3} = this.state.match.params;
@@ -582,6 +602,7 @@ class AdminPages extends React.Component {
         this.setState(nextProps);
     }
 
+
     render() {
         /*    const passed_props = {
          location: this.state.location,
@@ -598,11 +619,17 @@ class AdminPages extends React.Component {
             handleUserAddInputChange,
             addUser
         } = this;
+        const {
+            location,
+            match,
+            signOut,
+            auth,
+        } = this.state;
         const passed_props = {
-            location: this.state.signOut,
-            match: this.state.match,
-            signOut: this.state.signOut,
-            auth: this.state.auth,
+            location,
+            match,
+            signOut,
+            auth,
             getUsers,
             getuserById,
             deleteUser,
@@ -613,23 +640,28 @@ class AdminPages extends React.Component {
             handleEditInputChange,
             addUserData,
             handleUserAddInputChange,
-            addUser
+            addUser,
         };
         const mix = mixProps(passed_props);
+
+
         return (
             <main>
                 <Test {...passed_props} />
                 <HeaderAdmin {...passed_props}>
+                    <div>
+                        <div style={{float: 'right'}}>
+                            Welcone {auth.name} {auth.lastName} you
+                            are a { auth.userType}
+                        </div>
+                    </div>
                     <Switch>
-                        <Route path='/admin/users/edit/:id' render={(props) => {
-                            return <UserEditPage {...mix(props)}/>
-                        }}/>
-                        <Route exact path='/admin/users/add' render={(props) => {
-                            return <UsersAddPage {...mix(props)}/>
-                        }}/>
-                        <Route exact path='/admin/users' render={(props) => {
-                            return <UsersPage {...mix(props)}/>
-                        }}/>
+                        <PrivateAdminRoutes path="/admin/users/edit/:id" component={UserEditPage}
+                                            passedProps={passed_props}/>
+                        <PrivateAdminRoutes path="/admin/users/add" component={UsersAddPage}
+                                            passedProps={passed_props}/>
+                        <PrivateAdminRoutes path="/admin/users" component={UserEditPage} passedProps={passed_props}/>
+
 
                         <Route exact path='/admin' render={(props) => <Dashboard {...mix(props)}/>}/>
                         <Route path='/admin/:i?' render={(props) => <PageNotFound {...mix(props)}/>}/>

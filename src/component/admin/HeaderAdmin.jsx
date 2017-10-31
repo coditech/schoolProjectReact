@@ -24,7 +24,7 @@ const AdminNavItem = ({navBarItem}) => (
 
     <h2>jj</h2>
 )
-const HeaderAdmin = ({children, location, signOut,navBarItems}) => {
+const HeaderAdmin = ({children, location, signOut,navBarItems, auth}) => {
 
     return (
         <div className="container-fluid display-table">

@@ -23,9 +23,9 @@ const ActionTd = ({actionPath, item}) => {
                                   onClick={(e) => {
                                       e.preventDefault();
                                       action.action(item[action.key]);
-                                  }}
-                            >{action.title}<i
-                                className={'fa' + action.icon}/></Link>
+                                  }}>
+                                {action.title}
+                                <i className={'fa' + action.icon}/></Link>
                         )
                     } else {
                         return (

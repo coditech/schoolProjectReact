@@ -1,19 +1,19 @@
-import  React from "react";
+import React from "react";
 import {Redirect} from "react-router-dom";
 
 const Login = ({checkAuthenticate, location, authenticate, login}) => {
 
 
-    const {from} = location.state || {from: {pathname: '/admin' }}
+    const {from} = location.state || {from: {pathname: '/admin'}}
 
     if (checkAuthenticate()) {
         return (
-            <Redirect to={from}/>
+            <Redirect to={'/admin'}/>
         )
     }
     return (
         <div>
-            <p>You must log in to view the page at {from.pathname}</p>
+            <p>You must `log in to view the page at {from.pathname}</p>
             <input type="text" name="username" id="username" placeholder="Username"/>
             <input type="text" name="password" id="password" placeholder="Password"/>
             <button onClick={() => {

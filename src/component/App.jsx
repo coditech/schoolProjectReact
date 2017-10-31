@@ -16,9 +16,11 @@ const STATUS = {
 function fetchJson(url) {
     return fetch('http://localhost:8000/api/' + url).then(res => res.json())
 }
+
 function fetchPostJson(url, settings) {
     return fetch('http://localhost:8000/api/' + url, settings).then(res => res.json())
 }
+
 function isEmpty(obj) {
     for (var key in obj) {
         if (obj.hasOwnProperty(key))
@@ -95,7 +97,10 @@ class App extends Component {
             if (page != this.state.articlesList.currentPage) {
                 const oldState = this.state;
                 const articlesList = oldState.articlesList;
-                const newState = {...oldState, articlesList: {...articlesList, currentPage: page, status: STATUS.READY}};
+                const newState = {
+                    ...oldState,
+                    articlesList: {...articlesList, currentPage: page, status: STATUS.READY}
+                };
                 this.setState(newState);
 
             }
@@ -255,6 +260,8 @@ class App extends Component {
                 id: res.user.id,
                 password: password,
                 status: STATUS.READY,
+                name: res.user.name,
+                lastName: res.user.lastName,
                 userType: res.user.userType
             }
 
@@ -332,7 +339,6 @@ class App extends Component {
     //     console.log('componentWillMount===>>>', this);
     //     // this.loadArticles(1);
     // }
-
 
 
     render() {
