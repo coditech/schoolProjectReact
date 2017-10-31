@@ -83,6 +83,7 @@ const UserEditPage = ({location, match, editUser, editUserData, handleEditInputC
                             <option value="admin">Admin</option>
                             <option value="teacher">Teacher</option>
                             <option value="student">Student</option>
+                            <option value="student">Parent</option>
                         </select>
                     </div>
                     <div>

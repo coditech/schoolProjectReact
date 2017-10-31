@@ -4,7 +4,7 @@ import {Route, Switch, Link, Redirect, withRouter} from "react-router-dom";
 import formurlencoded from 'form-urlencoded';
 import HeaderAdmin from "../../component/admin/HeaderAdmin";
 import '../../styles/AdminHeader.styl';
-import Test from "../../component/Test";
+
 import UsersPage from "./UsersPage";
 import UserEditPage from "./UserEditPage";
 import UsersAddPage from "./UsersAddPage";
@@ -648,11 +648,11 @@ class AdminPages extends React.Component {
 
         return (
             <main>
-                <Test {...passed_props} />
+
                 <HeaderAdmin {...passed_props}>
                     <div>
                         <div style={{float: 'right'}}>
-                            Welcone {auth.name} {auth.lastName} you
+                            Welcome {auth.name}  you
                             are a { auth.userType}
                         </div>
                     </div>

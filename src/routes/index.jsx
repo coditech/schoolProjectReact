@@ -11,7 +11,6 @@ import {
 import PublicPages from "./public/index";
 import AdminPages from "./admin/index";
 import Login from "./admin/Login";
-import Test from "../component/Test";
 
 
 const mixProps = (passed_props_home) => (props) => ({...passed_props_home, ...props})

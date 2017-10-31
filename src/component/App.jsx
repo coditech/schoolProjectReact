@@ -2,7 +2,6 @@ import React, {Component} from "react";
 import ReactDOM from 'react-dom';
 import queryString from 'query-string';
 import Router from '../routes/index'
-import Test from './Test';
 import '../styles/App.styl';
 import {Link, Redirect, Route, withRouter} from "react-router-dom";
 

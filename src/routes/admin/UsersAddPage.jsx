@@ -95,6 +95,7 @@ const UsersAddPage = ({addUserData, match, addUser, handleUserAddInputChange}) =
                             <option value="admin">Admin</option>
                             <option value="teacher">Teacher</option>
                             <option value="student">Student</option>
+                            <option value="student">Parent</option>
                         </select>
                     </div>
                     <div>

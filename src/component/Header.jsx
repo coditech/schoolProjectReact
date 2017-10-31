@@ -12,7 +12,7 @@ const Header = () => {
                      backgroundPosition: 'right', minHeight: '300px',
                      backgroundSize: 'cover'
                  }}>
-                <h2 style={{color: 'blue', }} className="header-h2">Hello world</h2>
+                <h2 style={{color: 'white', }} className="header-h2">Hello world</h2>
 
             </div>
     )
