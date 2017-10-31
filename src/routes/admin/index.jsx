@@ -248,6 +248,7 @@ class AdminPages extends React.Component {
                     return;
                 }
             }
+
             const users = [];
             res.data.map(function (user) {
                 users.push({
@@ -269,7 +270,7 @@ class AdminPages extends React.Component {
                 status: STATUS.READY
             }
             const oldState = this.state;
-            const newState = {...oldState, users: usersObject};
+            const newState = {...oldState, status: STATUS.READY, users: usersObject};
             this.setState(newState);
         })
     }
@@ -660,7 +661,7 @@ class AdminPages extends React.Component {
                                             passedProps={passed_props}/>
                         <PrivateAdminRoutes path="/admin/users/add" component={UsersAddPage}
                                             passedProps={passed_props}/>
-                        <PrivateAdminRoutes path="/admin/users" component={UserEditPage} passedProps={passed_props}/>
+                        <PrivateAdminRoutes path="/admin/users" component={UsersPage} passedProps={passed_props}/>
 
 
                         <Route exact path='/admin' render={(props) => <Dashboard {...mix(props)}/>}/>

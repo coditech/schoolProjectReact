@@ -2,8 +2,9 @@ import React from 'react';
 import DataTable from "../../component/admin/DataTable";
 import {Link} from "react-router-dom";
 
-const UsersPage = ({users, deleteUser}) => {
-
+const UsersPage = (props) => {
+const {users, deleteUser} = props;
+    console.log('props', props);
 
     const actionPath = [
         {
