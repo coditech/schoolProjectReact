@@ -50,42 +50,15 @@ class PublicPages extends Component {
     componentWillReceiveProps(nextProps) {
         const match = this.state.match;
 
-        console.log('componentWillReceiveProps => public', nextProps);
-        if (nextProps.location.pathname !== '/' && this.state.location.pathname !== nextProps.location.pathname) {
-            nextProps.articlesList.currentPage = 1;
-        }
-        if (nextProps.articlesList.currentPage <= 1 && nextProps.location.pathname === '/' && !this.state.articlesList.status) {
-            // nextProps.loadArticles(1);
-        }
-        if (this.state.location.pathname === '/' || this.state.location.pathname === '/article') {
+        if (this.state.location.pathname === '/') {
             if (!nextProps.articlesList.status) {
                 this.state.loadArticles(1);
             }
 
         }
 
+        this.setState(nextProps);
 
-        if (nextProps.location.pathname === '/') {
-            if (this.state.articlesList.currentPage !== nextProps.articlesList.currentPage) {
-
-                this.setState(nextProps);
-
-            } else if (nextProps.articlesList.currentPage === -1) {
-                // nextProps.articlesList.currentPage = 1;
-                // nextProps.loadArticles(1);
-            }
-
-
-        } else {
-
-            this.setState(nextProps);
-
-        }
-
-        //
-        // if (this.props.articlesList.currentPage !== nextProps.articlesList.currentPage) {
-        //     this.state.loadArticles(nextProps.articlesList.currentPage)
-        // }
     }
 
     render() {
